@@ -1,25 +1,20 @@
 from collections import OrderedDict
 
-numerals = [
-        {'letter': 'M', 'value': 1000},
-        {'letter': 'D', 'value': 500},
-        {'letter': 'C', 'value': 100},
-        {'letter': 'L', 'value': 50},
-        {'letter': 'X', 'value': 10},
-        {'letter': 'V', 'value': 5},
-        {'letter': 'I', 'value': 1},
-    ]
+numerals ={
+    'M': 1000,
+    'D': 500,
+    'C': 100,
+    'L': 50,
+    'X': 10,
+    'V': 5,
+    'I': 1
+}
 
 def roman_to_numerical(number):
-    index_by_letter = {}
-    for index in range(len(numerals)):
-        index_by_letter[numerals[index]['letter']] = index
-
     result = 0
     previous_value = None
     for letter in reversed(number):
-        index = index_by_letter[letter]
-        value = numerals[index]['value']
+        value = numerals[letter]
         if (previous_value is None) or (previous_value <= value):
             result += value
         else:
@@ -28,33 +23,17 @@ def roman_to_numerical(number):
     #print result
     return result
 
+num_map = [(1000, 'M'), (900, 'CM'), (500, 'D'), (400, 'CD'), (100, 'C'), (90, 'XC'),
+           (50, 'L'), (40, 'XL'), (10, 'X'), (9, 'IX'), (5, 'V'), (4, 'IV'), (1, 'I')]
 def numerical_to_roman(number):
-    roman = OrderedDict()
-    roman[1000] = "M"
-    roman[900] = "CM"
-    roman[500] = "D"
-    roman[400] = "CD"
-    roman[100] = "C"
-    roman[90] = "XC"
-    roman[50] = "L"
-    roman[40] = "XL"
-    roman[10] = "X"
-    roman[9] = "IX"
-    roman[5] = "V"
-    roman[4] = "IV"
-    roman[1] = "I"
+    roman = ''
+    while number > 0:
+        for i, r in num_map:
+            while number >= i:
+                roman += r
+                number -= i
 
-    def roman_num(number):
-        for r in roman.keys():
-            x, y = divmod(number, r)
-            yield roman[r] * x
-            number -= (r * x)
-            if number > 0:
-                roman_num(number)
-            else:
-                break
-
-    return "".join([a for a in roman_num(number)])
+    return roman
 def add(x, y):
    """This function adds two numbers"""
    return x + y
@@ -72,29 +51,35 @@ def divide(x, y):
    """This function divides two numbers"""
    return x / y
 
-# take input from the user
+def operator_map():
+    return {
+    '+': add,
+    '-': subtract,
+    '*': multiply,
+    '/': divide
+    }
 
+# take input from the user
 def calculation(number1,number2,choice):
     number1 = roman_to_numerical(number1)
     number2 = roman_to_numerical(number2)
+    operator_mapping = operator_map()
 
-    if choice == '+':
-       result = add(number1,number2)
+    operation = operator_mapping.get(choice)
+    print "operation/....", operation
+    if not operation:
+        result = "Invalid Operand"
+        return result
+    result = operation(number1, number2)
 
-    elif choice == '-':
-       result = subtract(number1,number2)
-
-    elif choice == '*':
-       result = multiply(number1,number2)
-
-    elif choice == '/':
-       result = divide(number1,number2)
-    else:
-       result = "Invalid input"
     final_result = numerical_to_roman(result)
     return final_result
-number1 = raw_input("Enter number")
-number2 = raw_input("Enter number 2")
-choice = raw_input("Enter operator")
-print calculation(number1,number2,choice)
 
+def main():
+    number1 = raw_input("Enter first roman number:")
+    number2 = raw_input("Enter second roman number:")
+    choice = raw_input("Enter Operator:")
+    print calculation(number1, number2, choice)
+
+if __name__ == "__main__":
+    main()
